@@ -596,3 +596,23 @@ Made with ♥ by [CreativeDesignsGuru](https://creativedesignsguru.com) [![Twitt
 Looking for a custom boilerplate to kick off your project? I'd be glad to discuss how I can help you build one. Feel free to reach out anytime at contact@creativedesignsguru.com!
 
 [![Sponsor Next JS Boilerplate](https://cdn.buymeacoffee.com/buttons/default-red.png)](https://github.com/sponsors/ixartz)
+
+---
+
+## 🛠️ Project Modifications & Setup Notes
+
+This section outlines the setup adjustments and dependency alignments made in this repository:
+
+### 1. Dependency Conflict Resolution (`package.json`)
+- **Vite 5 Compatibility**: Replaced Vite 7 (`"vite": "^7.2.7"` in production dependencies) with `"vite": "^5.4.10"` in `devDependencies` to eliminate `ERESOLVE` collisions with `@vitejs/plugin-react` and `vitest`.
+- **Percy CLI**: Updated `@percy/cli` from `1.30.1` to `^1.30.1` to satisfy `@percy/playwright`'s peer dependency requirement (`>=1.32.3`).
+
+### 2. NPM Configuration (`.npmrc`)
+- **Legacy Peer Dependencies**: Added `legacy-peer-deps=true` to tell npm to resolve peer dependencies gracefully without crashing on minor dev-tool mismatches.
+
+### 3. Authentication & Security Configuration (`.env.local` & `.env`)
+- **Clerk Authentication**: Added active development credentials (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`) to `.env.local` to resolve handshake errors (`reason=secret-key-invalid`).
+- **Secret Separation**: Kept sensitive keys in `.env.local` (not tracked in Git) while preserving placeholders in `.env`.
+
+### 4. Stripe Development Placeholders (`.env.local`)
+- Set placeholder strings for `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` in `.env.local` so the project's Zod environment schema validation (`Env.ts`) succeeds on local server startup.
