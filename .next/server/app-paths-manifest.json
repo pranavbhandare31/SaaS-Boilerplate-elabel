@@ -1,0 +1,10 @@
+{
+  "/api/ingredients/route": "app/api/ingredients/route.js",
+  "/api/products/route": "app/api/products/route.js",
+  "/[locale]/(auth)/(center)/sign-in/[[...sign-in]]/page": "app/[locale]/(auth)/(center)/sign-in/[[...sign-in]]/page.js",
+  "/[locale]/(auth)/(center)/sign-up/[[...sign-up]]/page": "app/[locale]/(auth)/(center)/sign-up/[[...sign-up]]/page.js",
+  "/[locale]/(auth)/dashboard/page": "app/[locale]/(auth)/dashboard/page.js",
+  "/[locale]/(auth)/onboarding/organization-selection/page": "app/[locale]/(auth)/onboarding/organization-selection/page.js",
+  "/[locale]/(auth)/dashboard/products/add/page": "app/[locale]/(auth)/dashboard/products/add/page.js",
+  "/[locale]/(auth)/dashboard/ingredients/add/page": "app/[locale]/(auth)/dashboard/ingredients/add/page.js"
+}
