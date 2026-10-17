@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.1...v1.0.2) (2026-10-17)
+
+
+### Bug Fixes
+
+* add product ingredient relationships ([ddca2dd](https://github.com/pranavbhandare31/Wine_lable/commit/ddca2ddf576827148a5c916a754e894a06658b45))
+
 ## [1.0.1](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.0...v1.0.1) (2026-10-17)
 
 
