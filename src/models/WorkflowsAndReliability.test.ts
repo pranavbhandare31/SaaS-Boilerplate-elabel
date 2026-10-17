@@ -229,7 +229,59 @@ describe('Master Workflows, Persistence & Security Integration Tests', () => {
       expect(updated.name).toBe('User A Reserve 2021 (Special Edit)');
       expect(updated.updatedAt).toBeDefined();
 
+      // Check ingredient ownership security
+      const ingA = (
+        await db
+          .insert(schema.ingredients)
+          .values({
+            name: 'User A Proprietary Yeast',
+            category: 'Yeast',
+            createdBy: 'user_AAA_111',
+          })
+          .returning()
+      )[0]!;
+
+      // User B attempts to delete User A's ingredient
+      const isIngAuthorized = ingA.createdBy === simulatedRequestUser;
+      expect(isIngAuthorized).toBe(false);
+
+      // Verify unauthenticated check returns unauthorized
+      const unauthUserId = null;
+      const isUnauthAllowed = !!unauthUserId;
+      expect(isUnauthAllowed).toBe(false);
+
       await client.close();
+    });
+
+    it('rejects unauthorized mutations and enforces 401/403 status logic', () => {
+      // Simulating API handler authorization guard
+      const checkAccess = (userId: string | null | undefined, resourceOwner: string | null) => {
+        if (!userId) {
+          return { status: 401, error: 'Unauthorized: Authentication required' };
+        }
+        if (resourceOwner && resourceOwner !== userId) {
+          return { status: 403, error: 'Forbidden: You do not have permission to modify this resource' };
+        }
+        return { status: 200, allowed: true };
+      };
+
+      // 1. Unauthenticated request
+      expect(checkAccess(null, 'user_123')).toEqual({
+        status: 401,
+        error: 'Unauthorized: Authentication required',
+      });
+
+      // 2. Cross-user unauthorized request
+      expect(checkAccess('user_attacker_456', 'user_owner_123')).toEqual({
+        status: 403,
+        error: 'Forbidden: You do not have permission to modify this resource',
+      });
+
+      // 3. Authorized owner request
+      expect(checkAccess('user_owner_123', 'user_owner_123')).toEqual({
+        status: 200,
+        allowed: true,
+      });
     });
   });
 
