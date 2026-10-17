@@ -162,5 +162,33 @@
     "message_title": "Message",
     "message_description": "Entrez un message détaillé pour votre todo.",
     "submit_button": "Envoyer"
+  },
+  "product": {
+    "vintage": "Millésime",
+    "wineType": "Type de vin",
+    "appellation": "Appellation",
+    "alcoholContent": "Alcool",
+    "sugarContent": "Teneur en sucre",
+    "netVolume": "Volume net",
+    "portionSize": "Portion",
+    "packagingGases": "Gaz d'emballage",
+    "countryOfOrigin": "Pays d'origine",
+    "operatorName": "Exploitant",
+    "operatorAddress": "Adresse de l'exploitant",
+    "operatorInfo": "Informations sur l'exploitant",
+    "sku": "SKU",
+    "ean": "EAN",
+    "externalLink": "En savoir plus",
+    "ingredients_allergens_title": "Ingrédients et allergènes",
+    "allergens_prefix": "Allergènes",
+    "no_ingredients": "Aucun ingrédient spécifié.",
+    "nutritional_info_title": "Informations nutritionnelles",
+    "kcal": "Kcal",
+    "kj": "kJ",
+    "fat": "Matières grasses",
+    "carbohydrates": "Glucides",
+    "organic": "Biologique",
+    "vegan": "Végétalien",
+    "vegetarian": "Végétarien"
   }
 }

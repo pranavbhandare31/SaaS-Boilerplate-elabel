@@ -162,5 +162,33 @@
     "message_title": "Message",
     "message_description": "Enter a detailed message for your todo.",
     "submit_button": "Submit"
+  },
+  "product": {
+    "vintage": "Vintage",
+    "wineType": "Type",
+    "appellation": "Appellation",
+    "alcoholContent": "Alcohol",
+    "sugarContent": "Sugar",
+    "netVolume": "Net Volume",
+    "portionSize": "Portion Size",
+    "packagingGases": "Packaging Gases",
+    "countryOfOrigin": "Country",
+    "operatorName": "Operator",
+    "operatorAddress": "Operator Address",
+    "operatorInfo": "Operator Info",
+    "sku": "SKU",
+    "ean": "EAN",
+    "externalLink": "More Info",
+    "ingredients_allergens_title": "Ingredients & Allergens",
+    "allergens_prefix": "Allergens",
+    "no_ingredients": "No ingredients specified.",
+    "nutritional_info_title": "Nutritional Information",
+    "kcal": "Kcal",
+    "kj": "kJ",
+    "fat": "Fat",
+    "carbohydrates": "Carbs",
+    "organic": "Organic",
+    "vegan": "Vegan",
+    "vegetarian": "Vegetarian"
   }
 }
