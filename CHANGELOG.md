@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.0...v1.0.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* **db:** update createdBy column and schemas to support Clerk string user IDs ([142841c](https://github.com/pranavbhandare31/Wine_lable/commit/142841c0617aa3dabce52af641f7ef3d033de8db))
+
 # 1.0.0 (2026-10-17)
 
 
