@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
 import { AllLocales, AppConfig } from './utils/AppConfig';
+import { getI18nPath } from './utils/Helpers';
 
 const intlMiddleware = createMiddleware({
   locales: AllLocales,
@@ -26,8 +27,8 @@ export default clerkMiddleware(async (auth, req) => {
       const pathnameLocale = AllLocales.find(
         loc => req.nextUrl.pathname === `/${loc}` || req.nextUrl.pathname.startsWith(`/${loc}/`),
       );
-      const localePrefix = pathnameLocale && pathnameLocale !== AppConfig.defaultLocale ? `/${pathnameLocale}` : '';
-      const signInUrl = new URL(`${localePrefix}/sign-in`, req.url);
+      const locale = pathnameLocale || AppConfig.defaultLocale;
+      const signInUrl = new URL(getI18nPath('/sign-in', locale), req.url);
 
       await auth.protect({
         // `unauthenticatedUrl` ensures next-intl locale context is preserved on unauthenticated redirects

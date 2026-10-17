@@ -29,9 +29,14 @@ export const getBaseUrl = () => {
 };
 
 export const getI18nPath = (url: string, locale: string) => {
-  if (locale === AppConfig.defaultLocale) {
+  const loc = locale || AppConfig.defaultLocale;
+  if (AppConfig.localePrefix === 'always') {
+    return `/${loc}${url}`;
+  }
+
+  if (loc === AppConfig.defaultLocale) {
     return url;
   }
 
-  return `/${locale}${url}`;
+  return `/${loc}${url}`;
 };
