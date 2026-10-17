@@ -24,7 +24,11 @@ function StatusIcon({ active, label }: { active?: boolean | null; label: string 
 export default async function ProductPage({ params }: ProductPageProps) {
   unstable_setRequestLocale(params.locale);
   const t = useTranslations('product');
-  const productId = parseInt(params.id, 10);
+  const productId = Number.parseInt(params.id, 10);
+  if (Number.isNaN(productId)) {
+    notFound();
+  }
+
   const product = await db
     .select()
     .from(products)

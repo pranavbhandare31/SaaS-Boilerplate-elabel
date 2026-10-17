@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server';
 import { and, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -57,6 +58,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
+    const { userId } = await auth();
+    if (userId && product[0]?.createdBy && product[0].createdBy !== userId) {
+      return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this product' }, { status: 403 });
+    }
+
     const body = await request.json();
     const parsed = addIngredientsSchema.parse(body);
 
@@ -102,7 +108,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     return NextResponse.json(updatedIngredients, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to add ingredients to product', stack: error }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to add ingredients to product', detail: error instanceof Error ? error.message : error }, { status: 400 });
   }
 }
 
@@ -111,6 +117,16 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     const productId = Number.parseInt(params.id);
     if (Number.isNaN(productId)) {
       return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 });
+    }
+
+    const product = await db.select().from(products).where(eq(products.id, productId));
+    if (product.length === 0) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    const { userId } = await auth();
+    if (userId && product[0]?.createdBy && product[0].createdBy !== userId) {
+      return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this product' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -132,6 +148,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     return NextResponse.json({ success: true, removed: deleted[0] });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to remove ingredient from product', stack: error }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to remove ingredient from product', detail: error instanceof Error ? error.message : error }, { status: 400 });
   }
 }

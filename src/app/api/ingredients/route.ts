@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 import { db } from '@/libs/DB';
@@ -7,19 +8,26 @@ export async function GET() {
   try {
     const allIngredients = await db.select().from(ingredients);
     return NextResponse.json(allIngredients);
-  } catch (_error) {
-    return NextResponse.json({ error: 'Failed to fetch ingredients' }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch ingredients', detail: error instanceof Error ? error.message : error }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
     const body = await request.json();
     const validatedData = insertIngredientSchema.parse(body);
 
-    const newIngredient = await db.insert(ingredients).values(validatedData).returning();
+    const createdBy = validatedData.createdBy || userId || null;
+
+    const newIngredient = await db
+      .insert(ingredients)
+      .values({ ...validatedData, createdBy })
+      .returning();
+
     return NextResponse.json(newIngredient[0], { status: 201 });
-  } catch (_error) {
-    return NextResponse.json({ error: 'Failed to create ingredient' }, { status: 400 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to create ingredient', detail: error instanceof Error ? error.message : error }, { status: 400 });
   }
 }

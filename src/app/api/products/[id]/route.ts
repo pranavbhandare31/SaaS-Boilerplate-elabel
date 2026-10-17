@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
@@ -35,7 +36,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
       ingredients: associatedIngredients,
     });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch product', stack: error }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch product', detail: error instanceof Error ? error.message : error }, { status: 500 });
   }
 }
 
@@ -46,19 +47,28 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
+    const existingProduct = await db.select().from(products).where(eq(products.id, id));
+    if (existingProduct.length === 0) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    const { userId } = await auth();
+    if (userId && existingProduct[0]?.createdBy && existingProduct[0].createdBy !== userId) {
+      return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this product' }, { status: 403 });
+    }
+
     const body = await request.json();
     const validatedData = insertProductSchema.partial().parse(body);
     const { ingredientIds, ...productData } = validatedData;
 
-    let updatedProduct = await db
+    const updatedProduct = await db
       .update(products)
-      .set(productData)
+      .set({
+        ...productData,
+        updatedAt: new Date(),
+      })
       .where(eq(products.id, id))
       .returning();
-
-    if (updatedProduct.length === 0) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
 
     if (ingredientIds !== undefined) {
       await db.delete(productIngredients).where(eq(productIngredients.productId, id));
@@ -89,7 +99,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       ingredients: associatedIngredients,
     });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update product', stack: error }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to update product', detail: error instanceof Error ? error.message : error }, { status: 400 });
   }
 }
 
@@ -100,14 +110,20 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
-    const deletedProduct = await db.delete(products).where(eq(products.id, id)).returning();
-
-    if (deletedProduct.length === 0) {
+    const existingProduct = await db.select().from(products).where(eq(products.id, id));
+    if (existingProduct.length === 0) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
+    const { userId } = await auth();
+    if (userId && existingProduct[0]?.createdBy && existingProduct[0].createdBy !== userId) {
+      return NextResponse.json({ error: 'Forbidden: You do not have permission to delete this product' }, { status: 403 });
+    }
+
+    const deletedProduct = await db.delete(products).where(eq(products.id, id)).returning();
+
     return NextResponse.json(deletedProduct[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete product', stack: error }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete product', detail: error instanceof Error ? error.message : error }, { status: 500 });
   }
 }

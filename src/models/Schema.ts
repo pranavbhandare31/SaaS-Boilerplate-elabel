@@ -123,21 +123,26 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
+const stringOrNumberNullish = z
+  .union([z.string(), z.number()])
+  .transform(val => String(val))
+  .nullish();
+
 export const insertProductSchema = z.object({
   name: z.string().min(1),
   brand: z.string().nullish(),
   netVolume: z.string().nullish(),
-  vintage: z.string().nullish(),
+  vintage: stringOrNumberNullish,
   wineType: z.string().nullish(),
   sugarContent: z.string().nullish(),
   appellation: z.string().nullish(),
-  alcoholContent: z.string().nullish(),
+  alcoholContent: stringOrNumberNullish,
   packagingGases: z.string().nullish(),
   portionSize: z.string().nullish(),
-  kcal: z.string().nullish(),
-  kj: z.string().nullish(),
-  fat: z.string().nullish(),
-  carbohydrates: z.string().nullish(),
+  kcal: stringOrNumberNullish,
+  kj: stringOrNumberNullish,
+  fat: stringOrNumberNullish,
+  carbohydrates: stringOrNumberNullish,
   organic: z.boolean().nullish(),
   vegetarian: z.boolean().nullish(),
   vegan: z.boolean().nullish(),
@@ -146,15 +151,12 @@ export const insertProductSchema = z.object({
   operatorAddress: z.string().nullish(),
   operatorInfo: z.string().nullish(),
   countryOfOrigin: z.string().nullish(),
-  sku: z.string().nullish(),
+  sku: stringOrNumberNullish,
   ean: z.string().nullish(),
   externalLink: z.string().nullish(),
   redirectLink: z.string().nullish(),
   imageUrl: z.string().nullish(),
-  createdBy: z
-    .union([z.string(), z.number()])
-    .transform(val => String(val))
-    .nullish(),
+  createdBy: stringOrNumberNullish,
   ingredientIds: z.array(z.number()).optional(),
 });
 

@@ -1,3 +1,5 @@
+import { auth } from '@clerk/nextjs/server';
+import { eq, isNull, or } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { db } from '@/libs/DB';
@@ -5,20 +7,31 @@ import { insertProductSchema, productIngredients, products } from '@/models/Sche
 
 export async function GET() {
   try {
-    const allProducts = await db.select().from(products);
+    const { userId } = await auth();
+    const query = userId
+      ? db.select().from(products).where(or(eq(products.createdBy, userId), isNull(products.createdBy)))
+      : db.select().from(products);
+
+    const allProducts = await query;
     return NextResponse.json(allProducts);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch products', stack: error }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch products', detail: error instanceof Error ? error.message : error }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
+    const { userId } = await auth();
     const body = await request.json();
     const validatedData = insertProductSchema.parse(body);
     const { ingredientIds, ...productData } = validatedData;
 
-    const newProduct = await db.insert(products).values(productData).returning();
+    const createdBy = productData.createdBy || userId || null;
+
+    const newProduct = await db
+      .insert(products)
+      .values({ ...productData, createdBy })
+      .returning();
 
     if (ingredientIds && ingredientIds.length > 0) {
       const associations = ingredientIds.map(ingredientId => ({
@@ -30,6 +43,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newProduct[0], { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create product', stack: error }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to create product', detail: error instanceof Error ? error.message : error }, { status: 400 });
   }
 }
