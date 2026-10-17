@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.6...v1.0.7) (2026-10-17)
+
+
+### Bug Fixes
+
+* **i18n:** preserve locale prefixes in auth redirects ([25c1519](https://github.com/pranavbhandare31/Wine_lable/commit/25c151938c6ade85bc02d74c13956dd5b156107b))
+
 ## [1.0.6](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.5...v1.0.6) (2026-10-17)
 
 
