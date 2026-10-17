@@ -51,7 +51,7 @@ export default function SignUpForm({ locale }: { locale: string }) {
 
       if (completeSignUp.status === 'complete') {
         await setActive({ session: completeSignUp.createdSessionId });
-        router.push(getI18nPath('/', locale));
+        router.push(getI18nPath('/dashboard', locale));
       }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || 'Invalid verification code');

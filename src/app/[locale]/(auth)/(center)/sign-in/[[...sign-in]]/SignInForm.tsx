@@ -1,10 +1,12 @@
 'use client';
-import { useSignIn } from '@clerk/nextjs';
+import { useAuth, useClerk, useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { getI18nPath } from '@/utils/Helpers';
 
 export default function SignInForm({ locale }: { locale: string }) {
+  const { isSignedIn } = useAuth();
+  const { signOut } = useClerk();
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -20,14 +22,30 @@ export default function SignInForm({ locale }: { locale: string }) {
     setError('');
 
     try {
-      const result = await signIn.create({
-        identifier: email,
-        password,
-      });
+      let result;
+      try {
+        result = await signIn.create({
+          identifier: email,
+          password,
+        });
+      } catch (firstErr: any) {
+        if (
+          firstErr.errors?.[0]?.code === 'session_exists'
+          || firstErr.errors?.[0]?.message?.toLowerCase().includes('already exists')
+        ) {
+          await signOut();
+          result = await signIn.create({
+            identifier: email,
+            password,
+          });
+        } else {
+          throw firstErr;
+        }
+      }
 
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
-        router.push(getI18nPath('/', locale));
+        router.push(getI18nPath('/dashboard', locale));
       }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || 'An error occurred');
@@ -49,6 +67,28 @@ export default function SignInForm({ locale }: { locale: string }) {
           <h1 className="mb-2 text-3xl font-bold tracking-tight text-slate-900">Welcome back</h1>
           <p className="text-sm text-slate-500">Sign in to continue to your account</p>
         </div>
+
+        {isSignedIn && (
+          <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50/80 p-4 text-center">
+            <p className="mb-3 text-xs font-medium text-slate-700">You are currently signed in.</p>
+            <div className="flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => router.push(getI18nPath('/dashboard', locale))}
+                className="rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
+              >
+                Go to Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Card */}
         <div className="rounded-3xl border border-slate-200/60 bg-white p-8 shadow-2xl shadow-slate-200/50 backdrop-blur-sm">
