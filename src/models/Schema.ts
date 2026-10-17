@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
 export const users = pgTable('users', {
@@ -43,7 +43,7 @@ export const products = pgTable('products', {
   imageUrl: text('image_url'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  createdBy: integer('created_by'),
+  createdBy: text('created_by'),
 });
 
 export const ingredients = pgTable('ingredients', {
@@ -55,7 +55,7 @@ export const ingredients = pgTable('ingredients', {
   details: text('details'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  createdBy: integer('created_by'),
+  createdBy: text('created_by'),
 });
 
 export const insertUserSchema = z.object({
@@ -109,7 +109,10 @@ export const insertProductSchema = z.object({
   externalLink: z.string().nullish(),
   redirectLink: z.string().nullish(),
   imageUrl: z.string().nullish(),
-  createdBy: z.number().nullish(),
+  createdBy: z
+    .union([z.string(), z.number()])
+    .transform(val => String(val))
+    .nullish(),
 });
 
 export const importProductSchema = z.object({
@@ -161,7 +164,10 @@ export const importProductSchema = z.object({
   externalLink: z.string().optional(),
   redirectLink: z.string().optional(),
   imageUrl: z.string().optional(),
-  createdBy: z.number().optional(),
+  createdBy: z
+    .union([z.string(), z.number()])
+    .transform(val => String(val))
+    .optional(),
 });
 
 export const insertIngredientSchema = z.object({
@@ -170,7 +176,10 @@ export const insertIngredientSchema = z.object({
   eNumber: z.string().nullish(),
   allergens: z.array(z.string()).nullish(),
   details: z.string().nullish(),
-  createdBy: z.number().nullish(),
+  createdBy: z
+    .union([z.string(), z.number()])
+    .transform(val => String(val))
+    .nullish(),
 });
 
 export type User = typeof users.$inferSelect;
