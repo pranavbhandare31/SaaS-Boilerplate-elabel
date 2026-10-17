@@ -37,7 +37,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const { userId } = await auth();
-    if (userId && existingIngredient[0]?.createdBy && existingIngredient[0].createdBy !== userId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    if (existingIngredient[0]?.createdBy && existingIngredient[0].createdBy !== userId) {
       return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this ingredient' }, { status: 403 });
     }
 
@@ -72,7 +75,10 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
     }
 
     const { userId } = await auth();
-    if (userId && existingIngredient[0]?.createdBy && existingIngredient[0].createdBy !== userId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    if (existingIngredient[0]?.createdBy && existingIngredient[0].createdBy !== userId) {
       return NextResponse.json({ error: 'Forbidden: You do not have permission to delete this ingredient' }, { status: 403 });
     }
 

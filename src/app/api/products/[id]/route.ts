@@ -12,10 +12,19 @@ export async function GET(_request: Request, { params }: { params: { id: string 
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+
     const product = await db.select().from(products).where(eq(products.id, id));
 
     if (product.length === 0) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    if (product[0]?.createdBy && product[0].createdBy !== userId) {
+      return NextResponse.json({ error: 'Forbidden: You do not have permission to view this product' }, { status: 403 });
     }
 
     const associatedIngredients = await db
@@ -53,7 +62,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const { userId } = await auth();
-    if (userId && existingProduct[0]?.createdBy && existingProduct[0].createdBy !== userId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    if (existingProduct[0]?.createdBy && existingProduct[0].createdBy !== userId) {
       return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this product' }, { status: 403 });
     }
 
@@ -116,7 +128,10 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
     }
 
     const { userId } = await auth();
-    if (userId && existingProduct[0]?.createdBy && existingProduct[0].createdBy !== userId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    if (existingProduct[0]?.createdBy && existingProduct[0].createdBy !== userId) {
       return NextResponse.json({ error: 'Forbidden: You do not have permission to delete this product' }, { status: 403 });
     }
 

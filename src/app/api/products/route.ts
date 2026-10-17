@@ -8,11 +8,14 @@ import { insertProductSchema, productIngredients, products } from '@/models/Sche
 export async function GET() {
   try {
     const { userId } = await auth();
-    const query = userId
-      ? db.select().from(products).where(or(eq(products.createdBy, userId), isNull(products.createdBy)))
-      : db.select().from(products);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    const allProducts = await db
+      .select()
+      .from(products)
+      .where(or(eq(products.createdBy, userId), isNull(products.createdBy)));
 
-    const allProducts = await query;
     return NextResponse.json(allProducts);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch products', detail: error instanceof Error ? error.message : error }, { status: 500 });
@@ -22,11 +25,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
     const body = await request.json();
     const validatedData = insertProductSchema.parse(body);
     const { ingredientIds, ...productData } = validatedData;
 
-    const createdBy = productData.createdBy || userId || null;
+    const createdBy = userId;
 
     const newProduct = await db
       .insert(products)

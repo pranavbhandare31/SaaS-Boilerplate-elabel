@@ -2,8 +2,7 @@
 import { db } from '@/libs/DB';
 import { ingredients, productIngredients, products } from '@/models/Schema';
 import { notFound } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { unstable_setRequestLocale } from 'next-intl/server';
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { eq } from 'drizzle-orm';
 
@@ -23,7 +22,7 @@ function StatusIcon({ active, label }: { active?: boolean | null; label: string 
 
 export default async function ProductPage({ params }: ProductPageProps) {
   unstable_setRequestLocale(params.locale);
-  const t = useTranslations('product');
+  const t = await getTranslations({ locale: params.locale, namespace: 'product' });
   const productId = Number.parseInt(params.id, 10);
   if (Number.isNaN(productId)) {
     notFound();

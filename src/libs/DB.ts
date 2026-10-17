@@ -41,12 +41,13 @@ if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD && Env.DATABASE_URL) {
     await global.client.waitReady;
 
     global.drizzle = drizzlePglite(global.client, { schema });
+
+    await migratePglite(global.drizzle, {
+      migrationsFolder: path.join(process.cwd(), 'migrations'),
+    });
   }
 
   drizzle = global.drizzle;
-  await migratePglite(global.drizzle, {
-    migrationsFolder: path.join(process.cwd(), 'migrations'),
-  });
 }
 
 export const db = drizzle;

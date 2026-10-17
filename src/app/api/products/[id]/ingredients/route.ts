@@ -59,7 +59,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 
     const { userId } = await auth();
-    if (userId && product[0]?.createdBy && product[0].createdBy !== userId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    if (product[0]?.createdBy && product[0].createdBy !== userId) {
       return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this product' }, { status: 403 });
     }
 
@@ -125,7 +128,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
 
     const { userId } = await auth();
-    if (userId && product[0]?.createdBy && product[0].createdBy !== userId) {
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+    if (product[0]?.createdBy && product[0].createdBy !== userId) {
       return NextResponse.json({ error: 'Forbidden: You do not have permission to modify this product' }, { status: 403 });
     }
 

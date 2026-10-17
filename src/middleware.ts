@@ -44,15 +44,18 @@ export default function middleware(
   ) {
     return clerkMiddleware(async (auth, req) => {
       if (isProtectedRoute(req)) {
-        const locale
-          = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
+        const isApi = req.nextUrl.pathname.startsWith('/api') || req.nextUrl.pathname.includes('/api/');
+        if (!isApi) {
+          const locale
+            = req.nextUrl.pathname.match(/(\/.*)\/dashboard/)?.at(1) ?? '';
 
-        const signInUrl = new URL(`${locale}/sign-in`, req.url);
+          const signInUrl = new URL(`${locale}/sign-in`, req.url);
 
-        await auth.protect({
-          // `unauthenticatedUrl` is needed to avoid error: "Unable to find `next-intl` locale because the middleware didn't run on this request"
-          unauthenticatedUrl: signInUrl.toString(),
-        });
+          await auth.protect({
+            // `unauthenticatedUrl` is needed to avoid error: "Unable to find `next-intl` locale because the middleware didn't run on this request"
+            unauthenticatedUrl: signInUrl.toString(),
+          });
+        }
       }
 
       const authObj = await auth();

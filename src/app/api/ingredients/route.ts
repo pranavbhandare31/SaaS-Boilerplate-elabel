@@ -16,10 +16,13 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
     const body = await request.json();
     const validatedData = insertIngredientSchema.parse(body);
 
-    const createdBy = validatedData.createdBy || userId || null;
+    const createdBy = userId;
 
     const newIngredient = await db
       .insert(ingredients)
