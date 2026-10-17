@@ -1,4 +1,5 @@
-import { boolean, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { boolean, index, integer, pgTable, serial, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
 export const users = pgTable('users', {
@@ -58,6 +59,47 @@ export const ingredients = pgTable('ingredients', {
   createdBy: text('created_by'),
 });
 
+export const productIngredients = pgTable(
+  'product_ingredients',
+  {
+    id: serial('id').primaryKey(),
+    productId: integer('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    ingredientId: integer('ingredient_id')
+      .notNull()
+      .references(() => ingredients.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow(),
+  },
+  table => ({
+    productIngredientUnique: uniqueIndex('product_ingredient_unique_idx').on(
+      table.productId,
+      table.ingredientId,
+    ),
+    productIdIdx: index('product_ingredients_product_id_idx').on(table.productId),
+    ingredientIdIdx: index('product_ingredients_ingredient_id_idx').on(table.ingredientId),
+  }),
+);
+
+export const productsRelations = relations(products, ({ many }) => ({
+  productIngredients: many(productIngredients),
+}));
+
+export const ingredientsRelations = relations(ingredients, ({ many }) => ({
+  productIngredients: many(productIngredients),
+}));
+
+export const productIngredientsRelations = relations(productIngredients, ({ one }) => ({
+  product: one(products, {
+    fields: [productIngredients.productId],
+    references: [products.id],
+  }),
+  ingredient: one(ingredients, {
+    fields: [productIngredients.ingredientId],
+    references: [ingredients.id],
+  }),
+}));
+
 export const insertUserSchema = z.object({
   username: z.string().min(1),
   email: z.string().email(),
@@ -113,6 +155,7 @@ export const insertProductSchema = z.object({
     .union([z.string(), z.number()])
     .transform(val => String(val))
     .nullish(),
+  ingredientIds: z.array(z.number()).optional(),
 });
 
 export const importProductSchema = z.object({
@@ -168,6 +211,7 @@ export const importProductSchema = z.object({
     .union([z.string(), z.number()])
     .transform(val => String(val))
     .optional(),
+  ingredientIds: z.array(z.number()).optional(),
 });
 
 export const insertIngredientSchema = z.object({
@@ -182,6 +226,12 @@ export const insertIngredientSchema = z.object({
     .nullish(),
 });
 
+export const insertProductIngredientSchema = z.object({
+  productId: z.number(),
+  ingredientId: z.number(),
+});
+
 export type User = typeof users.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
+export type ProductIngredient = typeof productIngredients.$inferSelect;

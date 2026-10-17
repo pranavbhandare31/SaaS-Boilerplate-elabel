@@ -22,6 +22,13 @@
       "when": 1792208215641,
       "tag": "0002_wild_jane_foster",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792208646575,
+      "tag": "0003_thick_dark_beast",
+      "breakpoints": true
     }
   ]
 }

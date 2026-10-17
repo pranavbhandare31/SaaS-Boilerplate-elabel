@@ -8,7 +8,11 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Product } from '@/models/Schema';
+import type { Ingredient, Product } from '@/models/Schema';
+
+type ProductWithIngredients = Product & {
+  ingredients?: Ingredient[];
+};
 
 const PlaceholderImage = () => (
   <div className="flex h-64 w-full items-center justify-center rounded-lg bg-gray-100">
@@ -54,7 +58,7 @@ const Badge = ({ children, variant = 'default' }: { children: React.ReactNode; v
 export default function ProductPreviewPage() {
   const params = useParams();
   const router = useRouter();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<ProductWithIngredients | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -232,6 +236,39 @@ export default function ProductPreviewPage() {
           <InfoRow label="Carbohydrates" value={product.carbohydrates} />
           {product.packagingGases && (
             <InfoRow label="Packaging Gases" value={product.packagingGases} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Ingredients & Allergens */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Ingredients & Allergens</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {product.ingredients && product.ingredients.length > 0 ? (
+            <div className="space-y-3">
+              {product.ingredients.map(ing => (
+                <div key={ing.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2 last:border-0">
+                  <div>
+                    <span className="font-medium text-gray-900">{ing.name}</span>
+                    {ing.eNumber && <span className="ml-2 text-sm text-gray-500">({ing.eNumber})</span>}
+                    {ing.category && <p className="text-xs text-gray-500">{ing.category}</p>}
+                  </div>
+                  {ing.allergens && ing.allergens.length > 0 && (
+                    <div className="mt-1 sm:mt-0 flex flex-wrap gap-1">
+                      {ing.allergens.map((allergen, idx) => (
+                        <span key={idx} className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                          {allergen}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">No ingredients associated with this product.</p>
           )}
         </CardContent>
       </Card>

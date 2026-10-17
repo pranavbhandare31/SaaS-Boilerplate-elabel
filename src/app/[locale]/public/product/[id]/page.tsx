@@ -1,6 +1,6 @@
 
 import { db } from '@/libs/DB';
-import { products } from '@/models/Schema';
+import { ingredients, productIngredients, products } from '@/models/Schema';
 import { notFound } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
@@ -34,6 +34,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const p = product[0]!;
+
+  const productIngredientsList = await db
+    .select({
+      id: ingredients.id,
+      name: ingredients.name,
+      category: ingredients.category,
+      eNumber: ingredients.eNumber,
+      allergens: ingredients.allergens,
+      details: ingredients.details,
+    })
+    .from(productIngredients)
+    .innerJoin(ingredients, eq(productIngredients.ingredientId, ingredients.id))
+    .where(eq(productIngredients.productId, productId));
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-200">
@@ -69,6 +82,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {p.operatorInfo && <div><strong>{t('operatorInfo') || 'Operator Info'}:</strong> {p.operatorInfo}</div>}
             {p.sku && <div><strong>{t('sku') || 'SKU'}:</strong> {p.sku}</div>}
             {p.ean && <div><strong>{t('ean') || 'EAN'}:</strong> {p.ean}</div>}
+          </div>
+
+          {/* Ingredients & Allergens Section */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-2">Ingredients & Allergens</h2>
+            {productIngredientsList.length > 0 ? (
+              <ul className="list-disc pl-5 text-sm space-y-1">
+                {productIngredientsList.map(ing => (
+                  <li key={ing.id}>
+                    <span className="font-medium">{ing.name}</span>
+                    {ing.eNumber && <span className="text-gray-500"> ({ing.eNumber})</span>}
+                    {ing.category && <span className="text-gray-500"> - {ing.category}</span>}
+                    {ing.allergens && ing.allergens.length > 0 && (
+                      <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+                        Allergens: {ing.allergens.join(', ')}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">No ingredients specified.</p>
+            )}
           </div>
 
           <div className="mb-6">

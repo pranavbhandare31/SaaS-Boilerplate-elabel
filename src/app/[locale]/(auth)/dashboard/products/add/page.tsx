@@ -1,8 +1,9 @@
 'use client';
 
 import { upload } from '@vercel/blob/client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,23 @@ export default function AddProductPage() {
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState('');
+  const [availableIngredients, setAvailableIngredients] = useState<any[]>([]);
+  const [selectedIngredients, setSelectedIngredients] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchIngredients = async () => {
+      try {
+        const res = await fetch('/api/ingredients');
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableIngredients(data);
+        }
+      } catch (err) {
+        console.error('Failed to load ingredients', err);
+      }
+    };
+    fetchIngredients();
+  }, []);
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
@@ -84,7 +102,10 @@ export default function AddProductPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          ingredientIds: selectedIngredients,
+        }),
       });
 
       if (response.ok) {
@@ -436,6 +457,50 @@ export default function AddProductPage() {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Ingredients & Allergens Selection */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Ingredients & Allergens</h3>
+              {availableIngredients.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 border rounded-lg bg-gray-50/50">
+                  {availableIngredients.map(ing => {
+                    const isChecked = selectedIngredients.includes(ing.id);
+                    return (
+                      <label
+                        key={ing.id}
+                        className="flex items-start gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSelectedIngredients(prev => [...prev, ing.id]);
+                            } else {
+                              setSelectedIngredients(prev => prev.filter(id => id !== ing.id));
+                            }
+                          }}
+                          className="mt-1 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <div>
+                          <span className="font-medium text-gray-900">{ing.name}</span>
+                          {ing.eNumber && <span className="text-gray-500"> ({ing.eNumber})</span>}
+                          {ing.category && <p className="text-xs text-gray-500">{ing.category}</p>}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No ingredients created yet.{' '}
+                  <Link href="/dashboard/ingredients/add" className="text-primary underline">
+                    Add ingredients here
+                  </Link>
+                  .
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}
