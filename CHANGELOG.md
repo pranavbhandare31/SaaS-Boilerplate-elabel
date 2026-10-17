@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.2...v1.0.3) (2026-10-17)
+
+
+### Bug Fixes
+
+* complete English and French product translations ([29579ee](https://github.com/pranavbhandare31/Wine_lable/commit/29579ee2f5d5bca05d1a27e2827784f26e3ec62e))
+
 ## [1.0.2](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.1...v1.0.2) (2026-10-17)
 
 
