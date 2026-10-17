@@ -28,7 +28,7 @@ const QRCode = ({ value, size = 200 }: { value: string; size?: number }) => {
 const getProductUrl = (productId: string | string[] | undefined) => {
   if (typeof window !== 'undefined' && productId) {
     const id = Array.isArray(productId) ? productId[0] : productId;
-    return `${window.location.origin}/public/products/${id}`;
+    return `${window.location.origin}/public/product/${id}`;
   }
   return '';
 };
