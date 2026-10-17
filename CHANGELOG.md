@@ -1,3 +1,10 @@
+# 1.0.0 (2026-10-17)
+
+
+### Bug Fixes
+
+* resolve wine e-label QR URL mismatch to public product route ([8ef8138](https://github.com/pranavbhandare31/Wine_lable/commit/8ef8138be82ca8246569ed6099f02d534b4484e7))
+
 ## [1.7.6](https://github.com/ixartz/SaaS-Boilerplate/compare/v1.7.5...v1.7.6) (2025-05-01)
 
 
