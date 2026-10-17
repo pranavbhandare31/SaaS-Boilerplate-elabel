@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.4...v1.0.5) (2026-10-17)
+
+
+### Bug Fixes
+
+* resolve server-component localization, add localized 404, harden auth rejections, and optimize db initialization ([28b5446](https://github.com/pranavbhandare31/Wine_lable/commit/28b5446f90dfbd6b93f8f767d7abf2668121ca20))
+
 ## [1.0.4](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.3...v1.0.4) (2026-10-17)
 
 
