@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.3...v1.0.4) (2026-10-17)
+
+
+### Bug Fixes
+
+* harden database persistence, ownership authorization, validation resilience, and workflows ([7e2ff1d](https://github.com/pranavbhandare31/Wine_lable/commit/7e2ff1d98dbd476b4a93ee3296332850c3453d00))
+
 ## [1.0.3](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.2...v1.0.3) (2026-10-17)
 
 
