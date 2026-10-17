@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.5...v1.0.6) (2026-10-17)
+
+
+### Bug Fixes
+
+* **auth:** harden middleware routing, preserve i18n locales, and fix dashboard navigation ([d9d71be](https://github.com/pranavbhandare31/Wine_lable/commit/d9d71be61331337ad935433d9f75468a812753c7))
+
 ## [1.0.5](https://github.com/pranavbhandare31/Wine_lable/compare/v1.0.4...v1.0.5) (2026-10-17)
 
 
