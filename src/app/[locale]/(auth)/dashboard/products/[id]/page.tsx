@@ -139,6 +139,7 @@ export default function ProductPreviewPage() {
                       width={400}
                       height={256}
                       className="h-64 w-full rounded-lg object-cover"
+                      unoptimized
                     />
                   )
                 : (

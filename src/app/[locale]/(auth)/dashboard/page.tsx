@@ -160,6 +160,7 @@ export default function DashboardPage() {
                         width={100}
                         height={100}
                         className="rounded-md object-cover"
+                        unoptimized
                       />
                     ) : (
                       <PlaceholderImage />
